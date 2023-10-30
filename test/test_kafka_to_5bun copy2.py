@@ -4,20 +4,21 @@ from datetime import datetime, timedelta
 
 # Kafka 설정
 kafka_conf = {
-    'bootstrap.servers': 'shtestdb.duckdns.org:9094',  # Kafka 브로커 서버 주소로 변경
-    'group.id': 'stock_data_rere',
-    'auto.offset.reset': 'latest'
+    #'bootstrap.servers': 'shtestdb.duckdns.org:9094',  # Kafka 브로커 서버 주소로 변경
+    'bootstrap.servers': 'kafka:9092',  # Kafka 브로커 서버 주소로 변경
+    'group.id': 'hun_test1',
+    'auto.offset.reset': 'earliest'
 }
 
 # Kafka Consumer 생성
 consumer = Consumer(kafka_conf)
 
 # 구독할 토픽
-consumer.subscribe(['tick_test9'])
+consumer.subscribe(['stock_tick'])
 
 
 # Kafka Producer 생성
-producer = Producer({'bootstrap.servers': 'shtestdb.duckdns.org:9094'})
+producer = Producer({'bootstrap.servers': 'kafka:9092'})
 output_topic = '5min'
 
 # 종목별 봉 데이터를 저장할 딕셔너리
@@ -74,12 +75,6 @@ def check_time_range(time_str):
        return "잘못된 형식의 입력입니다."
     
     return time_obj.replace(minute=tmp_min, second=0, microsecond=0).strftime("%Y-%m-%d %H:%M:%S")
-
-
-
-
-
-
 
 
 
