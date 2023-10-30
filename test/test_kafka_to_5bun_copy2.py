@@ -19,7 +19,7 @@ consumer.subscribe(['stock_tick'])
 
 # Kafka Producer 생성
 producer = Producer({'bootstrap.servers': 'kafka:9092'})
-output_topic = '5min'
+output_topic = 'stock_5min_tick'
 
 # 종목별 봉 데이터를 저장할 딕셔너리
 candlestick_data = {}
