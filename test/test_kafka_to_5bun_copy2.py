@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 kafka_conf = {
     #'bootstrap.servers': 'shtestdb.duckdns.org:9094',  # Kafka 브로커 서버 주소로 변경
     'bootstrap.servers': 'kafka:9092',  # Kafka 브로커 서버 주소로 변경
-    'group.id': 'hun_test1',
+    'group.id': 'convert_min',
     'auto.offset.reset': 'earliest'
 }
 
