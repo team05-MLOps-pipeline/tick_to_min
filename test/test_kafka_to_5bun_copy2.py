@@ -42,7 +42,7 @@ def change_unix(timestamp):
 def check_time_range(time_str):
     try:
         # 입력된 시간을 파싱하여 시간과 분을 추출
-        time_obj = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S.%f")
+        time_obj = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S.%f%z")
         # 분 단위로 변환
         total_minutes =  time_obj.minute
         tmp_min = 0
