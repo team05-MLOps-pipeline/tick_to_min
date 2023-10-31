@@ -2,6 +2,30 @@ from confluent_kafka import Consumer, KafkaError, Producer
 import json
 from datetime import datetime, timedelta
 import pytz 
+import pandas as pd
+import os
+import logging
+import csv
+
+# 로그 생성
+logger = logging.getLogger()
+# 로그의 출력 기준 설정
+logger.setLevel(logging.INFO)
+# log 출력 형식
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+# log를 console에 출력
+stream_handler = logging.StreamHandler()
+stream_handler.setFormatter(formatter)
+logger.addHandler(stream_handler)
+
+
+##data 폴더 생성
+try:
+    if not os.path.exists("data"):
+        os.mkdir("data")
+except OSError:
+    logger.info('Error: Creating directory. ' +  "data")
+
 
 # Kafka 설정
 kafka_conf = {
@@ -70,7 +94,8 @@ def check_time_range(time_str):
             tmp_min = 50
         elif 50 <= total_minutes < 55:
             tmp_min = 55
-        elif 55 <= total_minutes < 0:
+        elif 55 <= total_minutes:
+            time_obj = time_obj + timedelta(hours=1)
             tmp_min = 0
         else:
             return "기타"
@@ -79,6 +104,15 @@ def check_time_range(time_str):
     
     return time_obj.replace(minute=tmp_min, second=0, microsecond=0).strftime("%Y-%m-%d %H:%M:%S")
 
+def write_to_csv(message, filename):
+    # 'a' 모드로 파일 열기 (없으면 새로 만들고, 있으면 끝에 추가)
+    with open(filename, 'a', newline='') as file:
+        writer = csv.writer(file)
+        # 메시지의 key들을 컬럼명으로 사용하려면 한 번만 쓰기
+        if file.tell() == 0:
+            writer.writerow(message.keys())
+        # 메시지의 value들을 csv 파일에 쓰기
+        writer.writerow(message.values())
 
 
 while True:
@@ -114,7 +148,9 @@ while True:
         last_candlestick = candlestick_data[stock_symbol][-1] if candlestick_data[stock_symbol] else None
         #print(last_candlestick)
         # 새로운 봉을 시작해야 하는지 확인
-        if last_candlestick is None or timestamp > last_candlestick['timestamp']:
+        if last_candlestick is None or datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S") > datetime.strptime(last_candlestick['timestamp'], "%Y-%m-%d %H:%M:%S"):
+
+            
             
             if candlestick_first[stock_symbol] == False:
                 message = {
@@ -127,8 +163,10 @@ while True:
                         }
                 producer.produce(output_topic, key=stock_symbol, value=json.dumps(message))
                 producer.flush()
-                print("send kafka")
-            
+                #print("send kafka")
+                #write_to_csv(message, f'./data/{stock_symbol}.csv')
+                
+                
             # 새로운 봉 데이터 생성
             new_candlestick = {
                 'timestamp': timestamp,
@@ -146,6 +184,8 @@ while True:
             last_candlestick['high'] = max(last_candlestick['high'], data['price'])
             last_candlestick['low'] = min(last_candlestick['low'], data['price'])
             last_candlestick['close'] = data['price']
+
+
 
 
 # Kafka Consumer 종료
