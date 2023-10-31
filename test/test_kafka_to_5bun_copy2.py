@@ -1,6 +1,7 @@
 from confluent_kafka import Consumer, KafkaError, Producer
 import json
 from datetime import datetime, timedelta
+import pytz 
 
 # Kafka 설정
 kafka_conf = {
@@ -32,8 +33,10 @@ candlestick_interval = timedelta(minutes=5)
 first_flag = True
 
 def change_unix(timestamp):
-    return datetime.fromtimestamp(timestamp)
-
+    korea_tz = pytz.timezone('Asia/Seoul')
+    utc_time = datetime.utcfromtimestamp(timestamp)
+    korea_time = utc_time.replace(tzinfo=pytz.utc).astimezone(korea_tz)
+    return korea_time
 
 
 def check_time_range(time_str):
