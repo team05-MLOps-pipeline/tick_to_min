@@ -30,8 +30,8 @@ except OSError:
 # Kafka 설정
 kafka_conf = {
     #'bootstrap.servers': 'shtestdb.duckdns.org:9094',  # Kafka 브로커 서버 주소로 변경
-    'bootstrap.servers': 'kafka:9092',  # Kafka 브로커 서버 주소로 변경
-    'group.id': 'conv_min',
+    'bootstrap.servers': '43.201.197.216:9094',  # Kafka 브로커 서버 주소로 변경
+    'group.id': 'convert_min1',
     'auto.offset.reset': 'earliest'
 }
 
@@ -43,8 +43,8 @@ consumer.subscribe(['stock_tick'])
 
 
 # Kafka Producer 생성
-producer = Producer({'bootstrap.servers': 'kafka:9092'})
-output_topic = 'stock_5min_tick'
+producer = Producer({'bootstrap.servers': '43.201.197.216:9094'})
+output_topic = 'stock_5min_ticktt2'
 
 # 종목별 봉 데이터를 저장할 딕셔너리
 candlestick_data = {}
@@ -60,13 +60,14 @@ def change_unix(timestamp):
     korea_tz = pytz.timezone('Asia/Seoul')
     utc_time = datetime.utcfromtimestamp(timestamp)
     korea_time = utc_time.replace(tzinfo=pytz.utc).astimezone(korea_tz)
-    return korea_time
+    return korea_time.strftime("%Y-%m-%d %H:%M:%S")
 
 
 def check_time_range(time_str):
     try:
         # 입력된 시간을 파싱하여 시간과 분을 추출
-        time_obj = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S.%f%z")
+        time_obj = datetime.strptime(time_str, "%Y-%m-%d %H:%M:%S")
+
         # 분 단위로 변환
         total_minutes =  time_obj.minute
         tmp_min = 0
@@ -146,6 +147,8 @@ while True:
 
         # 해당 종목의 봉 데이터 리스트에서 마지막 봉 가져오기
         last_candlestick = candlestick_data[stock_symbol][-1] if candlestick_data[stock_symbol] else None
+        
+
         #print(last_candlestick)
         # 새로운 봉을 시작해야 하는지 확인
         if last_candlestick is None or datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S") > datetime.strptime(last_candlestick['timestamp'], "%Y-%m-%d %H:%M:%S"):
