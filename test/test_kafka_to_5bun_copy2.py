@@ -30,8 +30,8 @@ except OSError:
 # Kafka 설정
 kafka_conf = {
     #'bootstrap.servers': 'shtestdb.duckdns.org:9094',  # Kafka 브로커 서버 주소로 변경
-    'bootstrap.servers': '43.201.197.216:9094',  # Kafka 브로커 서버 주소로 변경
-    'group.id': 'convert_min1',
+    'bootstrap.servers': 'kafka:9092',  # Kafka 브로커 서버 주소로 변경
+    'group.id': 'convert_tick_to_min',
     'auto.offset.reset': 'earliest'
 }
 
@@ -43,8 +43,8 @@ consumer.subscribe(['stock_tick'])
 
 
 # Kafka Producer 생성
-producer = Producer({'bootstrap.servers': '43.201.197.216:9094'})
-output_topic = 'stock_5min_ticktt2'
+producer = Producer({'bootstrap.servers': 'kafka:9092'})
+output_topic = 'stock_5min_tick'
 
 # 종목별 봉 데이터를 저장할 딕셔너리
 candlestick_data = {}
