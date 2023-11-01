@@ -31,7 +31,7 @@ except OSError:
 kafka_conf = {
     #'bootstrap.servers': 'shtestdb.duckdns.org:9094',  # Kafka 브로커 서버 주소로 변경
     'bootstrap.servers': 'kafka:9092',  # Kafka 브로커 서버 주소로 변경
-    'group.id': 'convert_min',
+    'group.id': 'conv_min',
     'auto.offset.reset': 'earliest'
 }
 
